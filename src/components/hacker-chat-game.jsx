@@ -125,43 +125,44 @@ export function HackerChatGame() {
               <ScrollArea className="h-[calc(100vh-200px)] rounded p-2">
                 {messages.map((message) => (
                   <div key={message.id} className="mb-4">
-                    <div
-                      className={`p-2 rounded ${
-                        message.rating === "excellent" ? "bg-green-900/30" :
-                        message.rating === "good" ? "bg-green-900/20" : ""
-                      }`}>
+                    <div className={`p-2 rounded ${
+                      message.type === "excellent" ? "bg-green-900/30" :
+                      message.type === "good" ? "bg-green-900/20" : ""
+                    }`}>
                       <div className="flex items-center gap-2 mb-1">
                         <Avatar className="w-6 h-6 border border-green-400">
-                          <AvatarFallback className="bg-green-900 text-green-400">{message.user[0]}</AvatarFallback>
+                          <AvatarImage src={message.sourceImg || message.logo} alt={message.chatname} />
+                          <AvatarFallback className="bg-green-900 text-green-400">{message.chatname[0]}</AvatarFallback>
                         </Avatar>
-                        <span className="font-semibold">{message.user}</span>
-                        <span className="text-xs text-green-600">
-                          {leaderboard.find(u => u.user === message.user)?.aura} Aura
-                        </span>
-                        {message.aura > 0 && (
-                          <span className="text-xs text-green-400">+{message.aura} aura</span>
-                        )}
-                        {message.rating === "excellent" && (
+                        <span className="font-semibold" style={{color: message.nameColor}}>{message.chatname}</span>
+                        {message.chatbadges && JSON.parse(message.chatbadges).map((badge, index) => (
+                          <img key={index} src={badge} alt="Badge" className="w-4 h-4" />
+                        ))}
+                        {message.membership && (
                           <Badge variant="outline" className="border-green-400 text-green-400">
-                            <Star className="w-3 h-3 mr-1" />
-                            Elite
+                            {message.membership}
                           </Badge>
                         )}
                       </div>
-                      <p className="text-green-300">{message.content}</p>
+                      <p className="text-green-300" style={{color: message.textColor}}>{message.chatmessage}</p>
+                      {message.chatimg && (
+                        <img src={message.chatimg} alt="Chat Image" className="mt-2 max-w-full h-auto" />
+                      )}
                     </div>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="text-xs text-green-600 mt-1 cursor-help">
-                            AI Analysis
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent className="bg-black border-green-400 text-green-400">
-                          <p>{message.feedback}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    {message.subtitle && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="text-xs text-green-600 mt-1 cursor-help">
+                              AI Analysis
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-black border-green-400 text-green-400">
+                            <p>{message.subtitle}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
                   </div>
                 ))}
               </ScrollArea>
