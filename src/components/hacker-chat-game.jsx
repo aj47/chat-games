@@ -83,7 +83,7 @@ export function HackerChatGame() {
       <Card
         className="w-full max-w-4xl mx-auto bg-black/90 border-green-400 shadow-[0_0_10px_#00ff00]">
         <CardHeader>
-          <CardTitle className="text-2xl text-center text-green-400 animate-pulse">The Hacker's Nexus</CardTitle>
+          <CardTitle className="text-2xl text-center text-green-400 animate-pulse">Techfren Chat</CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="chat" className="text-green-400">
