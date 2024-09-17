@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -9,12 +9,6 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MessageSquare, Star, Trophy, Users } from "lucide-react"
 
-// Mock data
-const messages = [
-  { id: 1, user: "Cipher", content: "Initiating breach protocol...", rating: "good", feedback: "Engaging roleplay that sets the hacker atmosphere", aura: 5 },
-  { id: 2, user: "Nexus", content: "What's our target system?", rating: "neutral", feedback: "On-theme question, but could be more specific", aura: 0 },
-  { id: 3, user: "Ghost", content: "I've identified a vulnerability in the firewall!", rating: "excellent", feedback: "Excellent contribution to the hacking scenario", aura: 10 },
-]
 
 const leaderboard = [
   { id: 1, user: "Ghost", aura: 1500, feedback: "Consistently provides crucial intel and innovative hacking strategies" },
@@ -76,6 +70,26 @@ const MatrixBackground = () => {
 };
 
 export function HackerChatGame() {
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch('/api/getMessages');
+        const data = await response.json();
+        setMessages(data.messages);
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    };
+
+    fetchMessages();
+
+    const interval = setInterval(fetchMessages, 5000); // Poll every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     (<div
       className="container mx-auto p-4 min-h-screen text-green400 font-mono relative">
