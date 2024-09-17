@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -71,6 +71,21 @@ const MatrixBackground = () => {
 
 export function HackerChatGame() {
   const [messages, setMessages] = useState([]);
+  const scrollAreaRef = useRef(null);
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTo({
+        top: scrollAreaRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -95,7 +110,7 @@ export function HackerChatGame() {
       className="container mx-auto p-4 min-h-screen text-green400 font-mono relative">
       <MatrixBackground />
       <Card
-        className="w-full max-w-4xl mx-auto bg-black/90 border-green-400 shadow-[0_0_10px_#00ff00]">
+        className="w-full max-w-4xl mx-auto bg-black/90 border-green-400 shadow-[0_0_10px_#00ff00] bg-black bg-opacity-90">
         <CardHeader>
           <CardTitle className="text-2xl text-center text-green-400 animate-pulse">Techfren Chat</CardTitle>
         </CardHeader>
@@ -122,10 +137,11 @@ export function HackerChatGame() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="chat">
-              <ScrollArea className="h-[calc(100vh-200px)] rounded p-2">
+              <ScrollArea className="h-[calc(100vh-200px)] rounded p-2" ref={scrollAreaRef}>
+                <div ref={messagesEndRef} />
                 {messages.map((message) => (
-                  <div key={message.id} className="mb-4">
-                    <div className={`p-2 rounded ${
+                  <div key={message.id} className="mb-2">
+                    <div className={`p-1 rounded ${
                       message.type === "excellent" ? "bg-green-900/30" :
                       message.type === "good" ? "bg-green-900/20" : ""
                     }`}>
