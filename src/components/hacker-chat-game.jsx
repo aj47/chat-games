@@ -131,13 +131,13 @@ export function HackerChatGame() {
                     }`}>
                       <div className="flex items-center gap-2 mb-1">
                         <Avatar className="w-6 h-6 border border-green-400">
-                          <AvatarImage src={message.sourceImg || message.logo} alt={message.chatname} />
+                          <AvatarImage src={message.chatimg} alt={message.chatname} />
                           <AvatarFallback className="bg-green-900 text-green-400">{message.chatname[0]}</AvatarFallback>
                         </Avatar>
                         <span className="font-semibold" style={{color: message.nameColor}}>{message.chatname}</span>
-                        {message.chatbadges && JSON.parse(message.chatbadges).map((badge, index) => (
+                        {/* {message.chatbadges && JSON.parse(message.chatbadges).map((badge, index) => (
                           <img key={index} src={badge} alt="Badge" className="w-4 h-4" />
-                        ))}
+                        ))} */}
                         {message.membership && (
                           <Badge variant="outline" className="border-green-400 text-green-400">
                             {message.membership}
@@ -145,9 +145,6 @@ export function HackerChatGame() {
                         )}
                       </div>
                       <p className="text-green-300" style={{color: message.textColor}}>{message.chatmessage}</p>
-                      {message.chatimg && (
-                        <img src={message.chatimg} alt="Chat Image" className="mt-2 max-w-full h-auto" />
-                      )}
                     </div>
                     {message.subtitle && (
                       <TooltipProvider>
@@ -172,7 +169,7 @@ export function HackerChatGame() {
                 {featuredProfiles.map((profile) => (
                   <Card key={profile.id} className="bg-black border-green-400">
                     <CardContent className="flex flex-col items-center p-6">
-                      <Avatar className="w-24 h-24 mb-4 border-2 border-green-400">
+                      <Avatar className="w-8 h-8 mb-4 border-2 border-green-400">
                         <AvatarImage src={profile.avatar} alt={profile.name} />
                         <AvatarFallback className="bg-green-900 text-green-400">{profile.name[0]}</AvatarFallback>
                       </Avatar>
