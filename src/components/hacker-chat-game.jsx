@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -70,21 +70,6 @@ const MatrixBackground = () => {
 
 export function HackerChatGame() {
   const [messages, setMessages] = useState([]);
-  const scrollAreaRef = useRef(null);
-
-  const scrollToBottom = () => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTo({
-        top: scrollAreaRef.current.scrollHeight,
-        behavior: 'smooth'
-      });
-    }
-  };
-
-  useEffect(() => {
-    console.log(messages)
-    scrollToBottom();
-  }, [messages]);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -136,92 +121,13 @@ export function HackerChatGame() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="chat">
-              <div className="scrollable-container p-2" ref={scrollAreaRef}>
-                {messages.map((message) => (
-                  <div key={message.id} className="mb-2">
-                    <div className={`p-1 rounded ${
-                      message.type === "excellent" ? "bg-green-900/30" :
-                      message.type === "good" ? "bg-green-900/20" : ""
-                    }`}>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Avatar className="w-6 h-6 border border-green-400">
-                          <AvatarImage src={message.chatimg} alt={message.chatname} />
-                          <AvatarFallback className="bg-green-900 text-green-400">{message.chatname[0]}</AvatarFallback>
-                        </Avatar>
-                        <span className="font-semibold" style={{color: message.nameColor}}>{message.chatname}</span>
-                        {/* {message.chatbadges && JSON.parse(message.chatbadges).map((badge, index) => (
-                          <img key={index} src={badge} alt="Badge" className="w-4 h-4" />
-                        ))} */}
-                        {message.membership && (
-                          <Badge variant="outline" className="border-green-400 text-green-400">
-                            {message.membership}
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="text-green-300" style={{color: message.textColor}}>{message.chatmessage}</p>
-                    </div>
-                    {message.subtitle && (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="text-xs text-green-600 mt-1 cursor-help">
-                              AI Analysis
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent className="bg-black border-green-400 text-green-400">
-                            <p>{message.subtitle}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                  </div>
-                ))}
-              </div>
+              <ChatTab messages={messages} />
             </TabsContent>
             <TabsContent value="profiles">
-              <div className="grid gap-6 md:grid-cols-3">
-                {featuredProfiles.map((profile) => (
-                  <Card key={profile.id} className="bg-black border-green-400">
-                    <CardContent className="flex flex-col items-center p-6">
-                      <Avatar className="w-8 h-8 mb-4 border-2 border-green-400">
-                        <AvatarImage src={profile.avatar} alt={profile.name} />
-                        <AvatarFallback className="bg-green-900 text-green-400">{profile.name[0]}</AvatarFallback>
-                      </Avatar>
-                      <h3 className="font-semibold text-lg text-green-400">{profile.name}</h3>
-                      <p className="text-sm text-green-600">{profile.aura} Aura</p>
-                      <Badge variant="outline" className="mt-2 border-green-400 text-green-400">{profile.recentAchievement}</Badge>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              <ProfilesTab featuredProfiles={featuredProfiles} />
             </TabsContent>
             <TabsContent value="leaderboard">
-              <div className="scrollable-container border border-green-400 rounded p-2">
-                {leaderboard.map((user, index) => (
-                  <div
-                    key={user.id}
-                    className="flex items-center gap-4 mb-4 p-2 bg-green-900/20 rounded">
-                    <span className="font-bold text-2xl text-green-400 w-8">{index + 1}.</span>
-                    <Avatar className="w-12 h-12 border border-green-400">
-                      <AvatarFallback className="bg-green-900 text-green-400">{user.user[0]}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-green-400">{user.user}</h3>
-                      <p className="text-sm text-green-600">{user.aura} Aura</p>
-                    </div>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Trophy className="w-6 h-6 text-green-400 cursor-help" />
-                        </TooltipTrigger>
-                        <TooltipContent className="bg-black border-green-400 text-green-400">
-                          <p className="max-w-xs">{user.feedback}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                ))}
-              </div>
+              <LeaderboardTab leaderboard={leaderboard} />
             </TabsContent>
           </Tabs>
         </CardContent>
@@ -229,3 +135,6 @@ export function HackerChatGame() {
     </div>)
   );
 }
+import ChatTab from "./chat-tab";
+import ProfilesTab from "./profiles-tab";
+import LeaderboardTab from "./leaderboard-tab";
