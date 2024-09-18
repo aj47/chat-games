@@ -20,10 +20,12 @@ export default function ChatTab({ messages }) {
   }, [messages]);
 
   return (
-    <div className="scrollable-container p-2" ref={scrollAreaRef}>
-      {messages.map((message) => (
-        <ChatMessage key={message.id} message={message} />
-      ))}
+    <div>
+      <div className="p-2 whitespace-pre-wrap max-w-full word-break-all" ref={scrollAreaRef}>
+        {messages.map((message) => (
+          <ChatMessage key={message.id} message={message} />
+        ))}
+      </div>
     </div>
   );
 }
