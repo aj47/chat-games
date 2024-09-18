@@ -75,7 +75,7 @@ export function HackerChatGame() {
                 Elite Hackers
               </TabsTrigger>
             </TabsList>
-            <TabsContent value="chat">
+            <TabsContent value="chat" className="max-h-[calc(100vh-200px)] overflow-y-auto scrollable-container">
               <ChatTab messages={messages} />
             </TabsContent>
             <TabsContent value="profiles">

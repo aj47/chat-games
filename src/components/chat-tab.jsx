@@ -21,7 +21,7 @@ export default function ChatTab({ messages }) {
 
   return (
     <div>
-      <div className="p-2 whitespace-pre-wrap max-w-full word-break-all" ref={scrollAreaRef}>
+      <div className="p-2 whitespace-pre-wrap max-w-full overflow-x-hidden" ref={scrollAreaRef}>
         {messages.map((message) => (
           <ChatMessage key={message.id} message={message} />
         ))}
