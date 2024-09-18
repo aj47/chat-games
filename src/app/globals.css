@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.scrollable-container {
+  overflow-y: auto;
+  height: calc(100vh - 200px); /* Adjust height as needed */
+  rounded: inherit; /* Or specify a specific border-radius */
+}
+
+/* Optional: Custom scrollbar styles (for WebKit browsers) */
+.scrollable-container::-webkit-scrollbar {
+  width: 8px; /* Adjust width as needed */
+}
+
+.scrollable-container::-webkit-scrollbar-track {
+  background: transparent; 
+}
+
+.scrollable-container::-webkit-scrollbar-thumb {
+  background: #00ff00; /* Green color */
+  border-radius: 4px;
+}

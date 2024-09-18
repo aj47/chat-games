@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -72,7 +71,6 @@ const MatrixBackground = () => {
 export function HackerChatGame() {
   const [messages, setMessages] = useState([]);
   const scrollAreaRef = useRef(null);
-  const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
@@ -84,6 +82,7 @@ export function HackerChatGame() {
   };
 
   useEffect(() => {
+    console.log(messages)
     scrollToBottom();
   }, [messages]);
 
@@ -137,8 +136,7 @@ export function HackerChatGame() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="chat">
-              <ScrollArea className="h-[calc(100vh-200px)] rounded p-2" ref={scrollAreaRef}>
-                <div ref={messagesEndRef} />
+              <div className="scrollable-container p-2" ref={scrollAreaRef}>
                 {messages.map((message) => (
                   <div key={message.id} className="mb-2">
                     <div className={`p-1 rounded ${
@@ -178,7 +176,7 @@ export function HackerChatGame() {
                     )}
                   </div>
                 ))}
-              </ScrollArea>
+              </div>
             </TabsContent>
             <TabsContent value="profiles">
               <div className="grid gap-6 md:grid-cols-3">
@@ -198,7 +196,7 @@ export function HackerChatGame() {
               </div>
             </TabsContent>
             <TabsContent value="leaderboard">
-              <ScrollArea className="h-[calc(100vh-200px)] border border-green-400 rounded p-2">
+              <div className="scrollable-container border border-green-400 rounded p-2">
                 {leaderboard.map((user, index) => (
                   <div
                     key={user.id}
@@ -223,7 +221,7 @@ export function HackerChatGame() {
                     </TooltipProvider>
                   </div>
                 ))}
-              </ScrollArea>
+              </div>
             </TabsContent>
           </Tabs>
         </CardContent>
