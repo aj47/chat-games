@@ -27,25 +27,21 @@ export function HackerChatGame() {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    const eventSource = new EventSource('/api/getMessages');
-
-    eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.messages) {
-        setMessages((prevMessages) => [...prevMessages, ...data.messages]);
-      } else if (data.error) {
-        console.error(data.error);
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch('/api/getMessages');
+        const data = await response.json();
+        setMessages(data.messages);
+      } catch (error) {
+        console.error('Error fetching messages:', error);
       }
     };
 
-    eventSource.onerror = (error) => {
-      console.error('EventSource failed:', error);
-      eventSource.close();
-    };
+    fetchMessages();
 
-    return () => {
-      eventSource.close(); // Clean up on component unmount
-    };
+    const interval = setInterval(fetchMessages, 5000); // Poll every 5 seconds
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
