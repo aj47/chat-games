@@ -76,7 +76,7 @@ export function HackerChatGame() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="chat" className="max-h-[calc(100vh-200px)] overflow-y-auto scrollable-container">
-              <ChatTab messages={messages} />
+              <ChatTab messages={messages.slice().reverse()} />
             </TabsContent>
             <TabsContent value="profiles">
               <ProfilesTab featuredProfiles={featuredProfiles} />
