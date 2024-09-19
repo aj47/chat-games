@@ -1,4 +1,4 @@
-import { HackerChatGame } from "@/components/hacker-chat-game";
+import { HackerChatGame } from "./hacker-chat";
 export default function Home() {
   return <HackerChatGame />;
 }

@@ -44,8 +44,8 @@ function insertMessage(db, message) {
         INSERT INTO messages (
           chatname, nameColor, chatbadges, backgroundColor, textColor,
           chatmessage, chatimg, hasDonation, membership, subtitle,
-          textonly, type, event, tid, mid, sourceImg, logo
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          textonly, type, event, tid, mid, sourceImg, logo, processed
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `, [
         message.chatname,
         message.nameColor,
@@ -63,7 +63,8 @@ function insertMessage(db, message) {
         message.tid,
         message.id,
         message.sourceImg,
-        message.logo
+        message.logo,
+        false // Set processed to false initially
       ], function (err) {
         if (err) reject(err);
         else {

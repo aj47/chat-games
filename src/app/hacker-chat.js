@@ -21,10 +21,10 @@ const featuredProfiles = [
   { id: 3, name: "Ghost", aura: 1500, avatar: "/placeholder.svg?height=64&width=64", recentAchievement: "Shadow Infiltrator" },
 ]
 
-import MatrixBackground from "./matrix-background";
-import ChatTab from "./chat-tab";
-import ProfilesTab from "./profiles-tab";
-import LeaderboardTab from "./leaderboard-tab";
+import MatrixBackground from "../components/matrix-background";
+import ChatTab from "../components/chat-tab";
+import ProfilesTab from "../components/profiles-tab";
+import LeaderboardTab from "../components/leaderboard-tab";
 
 export function HackerChatGame() {
   const [messages, setMessages] = useState([]);
@@ -105,6 +105,6 @@ export function HackerChatGame() {
           </Tabs>
         </CardContent>
       </Card>
-    </div>)
+    </div>
   );
 }
