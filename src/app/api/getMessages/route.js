@@ -11,7 +11,12 @@ export async function GET(request) {
       }
       console.log("Database opened successfully");
 
-      db.all("SELECT * FROM messages ORDER BY id DESC LIMIT 25", [], (err, rows) => {
+      db.all(`
+        SELECT m.*, u.aura 
+        FROM messages m
+        LEFT JOIN users u ON m.chatname = u.name
+        ORDER BY m.id DESC LIMIT 25
+      `, [], (err, rows) => {
         if (err) {
           console.error("Error fetching messages:", err);
           resolve(NextResponse.json({ error: "Failed to fetch messages" }, { status: 500 }));

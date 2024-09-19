@@ -16,7 +16,9 @@ export default function ChatMessage({ message }) {
             <AvatarImage src={message.chatimg} alt={message.chatname} />
             <AvatarFallback className="bg-green-900 text-green-400">{message.chatname[0]}</AvatarFallback>
           </Avatar>
-          <span className="font-semibold" style={{color: message.nameColor}}>{message.chatname}</span>
+          <span className="font-semibold" style={{ color: message.nameColor }}>
+            {message.chatname} {message.aura && <span className="text-green-600">({message.aura})</span>}
+          </span>
           {/* {message.chatbadges && JSON.parse(message.chatbadges).map((badge, index) => (
             <img key={index} src={badge} alt="Badge" className="w-4 h-4" />
           ))} */}
