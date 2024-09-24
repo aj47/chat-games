@@ -12,7 +12,7 @@ export async function GET(request) {
       console.log("Database opened successfully");
 
       db.all(`
-        SELECT m.*, u.points 
+        SELECT m.*, u.points, m.rating
         FROM messages m
         LEFT JOIN users u ON m.chatname = u.name
         ORDER BY m.id DESC LIMIT 25

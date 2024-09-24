@@ -43,7 +43,12 @@ export default function ChatMessage({ message }) {
                 </Badge>
               )}
             </span>
-            <span className="text-green-600">({message.points})</span>
+            <span className="text-green-600">
+              ({message.points}
+              {message.rating > 6 && (
+                <span className="text-yellow-400 ml-1">+10</span>
+              )})
+            </span>
           </div>
           {/* {message.chatbadges && JSON.parse(message.chatbadges).map((badge, index) => (
             <img key={index} src={badge} alt="Badge" className="w-4 h-4" />

@@ -21,7 +21,7 @@ function insertMessage(db, message) {
         message.chatimg,
         message.hasDonation,
         message.membership,
-        message.subtitle,
+        '',
         message.textonly,
         message.type,
         message.event,
@@ -35,7 +35,7 @@ function insertMessage(db, message) {
         else {
           // Update or insert user into users table
           db.run(
-            `INSERT INTO users (name) VALUES (?) ON CONFLICT (name) DO UPDATE SET aura = aura + 1`,
+            `INSERT INTO users (name) VALUES (?) ON CONFLICT (name) DO UPDATE SET points = points + 1`,
             [message.chatname],
             function (err) {
               if (err) reject(err);
