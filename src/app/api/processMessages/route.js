@@ -18,35 +18,79 @@ export async function GET(request) {
       return NextResponse.json({ error: "Failed to open database" }, { status: 500 });
     }
 
-    db.all(`SELECT * FROM messages WHERE processed = 0`, [], async (err, rows) => {
+    db.all(`SELECT * FROM messages WHERE processed = 0 ORDER BY id ASC LIMIT 50`, [], async (err, rows) => {
       if (err) {
         console.error("Error fetching unprocessed messages:", err);
         return NextResponse.json({ error: "Failed to fetch messages" }, { status: 500 });
       }
 
-      for (const message of rows) {
-        try {
-          const completion = await openai.chat.completions.create({
-            model: "openai/gpt-3.5-turbo",
-            messages: [
-              { role: "user", content: message.chatmessage }
-            ],
+      console.log(rows);
+
+      if (rows.length === 0) {
+        db.close((err) => {
+          if (err) {
+            console.error("Error closing database:", err);
+          }
+        });
+        return NextResponse.json({ message: "No unprocessed messages found" });
+      }
+
+      try {
+        const nonEmptyMessages = rows.filter(msg => msg.chatmessage.trim() !== "");
+
+        if (nonEmptyMessages.length === 0) {
+          for (const msg of rows) {
+            db.run(`UPDATE messages SET processed = 1 WHERE id = ?`, [msg.id], (err) => {
+              if (err) {
+                console.error("Error updating message:", err);
+              } else {
+                console.log(`Message ${msg.id} marked as processed.`);
+              }
+            });
+          }
+          db.close((err) => {
+            if (err) {
+              console.error("Error closing database:", err);
+            }
           });
+          return NextResponse.json({ message: "All messages are empty, marked as processed" });
+        }
 
-          const responseMessage = completion.choices[0].message.content;
+        const completion = await openai.chat.completions.create({
+          model: "google/gemini-flash-1.5-exp",
+          messages: [
+            { role: "system", content: "You are a tech streamer's co-host. Rate each message out of 10 and provide a very short summary as to why it's good or bad. A good comment is one that can be made into content related to technology, especially software." },
+            { role: "user", content: JSON.stringify(nonEmptyMessages) }
+          ],
+          response_format: { type: "json_object" }
+        });
+        console.log(JSON.stringify(completion));
 
-          // Update the message in the database with the processed response and set processed to true
-          db.run(`UPDATE messages SET subtitle = ?, processed = 1 WHERE id = ?`, [responseMessage, message.id], (err) => {
+        const responseJson = JSON.parse(completion.choices[0].message.content);
+
+        for (const response of responseJson) {
+          const { id, rating, summary } = response;
+          db.run(`UPDATE messages SET subtitle = ?, processed = 1 WHERE id = ?`, [summary, id], (err) => {
             if (err) {
               console.error("Error updating message:", err);
             } else {
-              console.log(`Message ${message.id} processed and updated successfully.`);
+              console.log(`Message ${id} processed and updated successfully.`);
             }
           });
-        } catch (error) {
-          console.error(`Error processing message ${message.id}:`, error);
-          // Handle error, e.g., log it, retry later, etc.
         }
+
+        for (const msg of rows.filter(msg => msg.chatmessage.trim() === "")) {
+          db.run(`UPDATE messages SET processed = 1 WHERE id = ?`, [msg.id], (err) => {
+            if (err) {
+              console.error("Error updating message:", err);
+            } else {
+              console.log(`Message ${msg.id} marked as processed.`);
+            }
+          });
+        }
+      } catch (error) {
+        console.error("Error processing messages:", error);
+        // Handle error, e.g., log it, retry later, etc.
       }
 
       db.close((err) => {
