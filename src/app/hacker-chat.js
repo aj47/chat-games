@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { MessageSquare, Star, Trophy, Users } from "lucide-react"
+import { MessageSquare, ShoppingCart, Star, Trophy, Users } from "lucide-react"
 
 
 
@@ -89,9 +89,9 @@ export function HackerChatGame() {
                 Techfren Chat
               </TabsTrigger>
               <TabsTrigger
-                value="profiles"
+                value="shop"
                 className="data-[state=active]:bg-green-900 data-[state=active]:text-green-400">
-                <Users className="w-4 h-4 mr-2" />
+                <ShoppingCart className="w-4 h-4 mr-2" />
                 Shop
               </TabsTrigger>
               <TabsTrigger
