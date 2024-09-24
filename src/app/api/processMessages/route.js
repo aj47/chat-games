@@ -59,7 +59,7 @@ export async function GET(request) {
         const completion = await openai.chat.completions.create({
           model: "google/gemini-flash-1.5-exp",
           messages: [
-            { role: "system", content: "You are a tech streamer's co-host. Rate each message out of 10 and provide a very short summary as to why it's good or bad. A good comment is one that can be made into content related to technology, especially software." },
+            { role: "system", content: "You are a tech streamer's co-host. Rate each message out of 10 and provide a very short summary as to why it's good or bad. A good comment is one that can be made into content related to technology, especially software. The response should be in JSON format with the following schema: [{\"id\": <message_id>, \"rating\": <rating>, \"reason\": <summary>}]." },
             { role: "user", content: JSON.stringify(nonEmptyMessages) }
           ],
           response_format: { type: "json_object" }
@@ -69,8 +69,8 @@ export async function GET(request) {
         const responseJson = JSON.parse(completion.choices[0].message.content);
 
         for (const response of responseJson) {
-          const { id, rating, summary } = response;
-          db.run(`UPDATE messages SET subtitle = ?, processed = 1 WHERE id = ?`, [summary, id], (err) => {
+          const { id, rating, reason } = response;
+          db.run(`UPDATE messages SET subtitle = ?, rating = ?, processed = 1 WHERE id = ?`, [reason, rating, id], (err) => {
             if (err) {
               console.error("Error updating message:", err);
             } else {

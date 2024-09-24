@@ -41,7 +41,8 @@ export async function initDb() {
       mid INTEGER,
       sourceImg TEXT,
       logo TEXT,
-      processed BOOLEAN DEFAULT 0
+      processed BOOLEAN DEFAULT 0,
+      rating INTEGER DEFAULT 0
     )`);
     console.log("Messages table created or already exists");
   } finally {
