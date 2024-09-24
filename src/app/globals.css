@@ -5,7 +5,6 @@
 .scrollable-container {
   overflow-y: auto;
   height: calc(100vh - 200px); /* Adjust height as needed */
-  rounded: inherit; /* Or specify a specific border-radius */
 }
 
 /* Optional: Custom scrollbar styles (for WebKit browsers) */
