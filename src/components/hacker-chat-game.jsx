@@ -93,7 +93,7 @@ export function HackerChatGame() {
                 Elite Hackers
               </TabsTrigger>
             </TabsList>
-            <TabsContent value="chat" className="max-h-[calc(100vh-200px)] overflow-y-auto scrollable-container">
+            <TabsContent value="chat" className="max-h-[calc(100vh-200px)]">
               <ChatTab messages={messages? messages.slice().reverse() : []} />
             </TabsContent>
             <TabsContent value="profiles">
