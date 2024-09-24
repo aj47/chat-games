@@ -1,46 +1,11 @@
 import { NextResponse } from "next/server";
 import sqlite3 from "sqlite3";
 
-function openDb() {
-  return new Promise((resolve, reject) => {
-    const db = new sqlite3.Database("messages.db", (err) => {
-      if (err) reject(err);
-      else resolve(db);
-    });
-  });
-}
+import { openDb } from "../../api/initDb";
 
 function insertMessage(db, message) {
   return new Promise((resolve, reject) => {
-    db.run(`CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT UNIQUE,
-      aura INTEGER DEFAULT 0
-    );
-
-    CREATE TABLE IF NOT EXISTS messages (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    chatname TEXT,
-    nameColor TEXT,
-    chatbadges TEXT,
-    backgroundColor TEXT,
-    textColor TEXT,
-    chatmessage TEXT,
-    chatimg TEXT,
-    hasDonation TEXT,
-    membership TEXT,
-    subtitle TEXT,
-    textonly BOOLEAN,
-    type TEXT,
-    event BOOLEAN,
-    tid INTEGER,
-    mid INTEGER,
-    sourceImg TEXT,
-    logo TEXT
-  )`, (err) => {
-    if (err) reject(err);
-    else {
-      db.run(`
+    db.run(`
         INSERT INTO messages (
           chatname, nameColor, chatbadges, backgroundColor, textColor,
           chatmessage, chatimg, hasDonation, membership, subtitle,
@@ -79,9 +44,7 @@ function insertMessage(db, message) {
           );
         }
       });
-    }
   });
-});
 }
 
 export async function POST(request) {
