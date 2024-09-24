@@ -29,6 +29,12 @@ export default function ChatMessage({ message }) {
           )}
         </div>
         <p className="text-green-300" style={{color: message.textColor}}>{message.chatmessage}</p>
+        {message.hasDonation && (
+          <div className="mt-1 p-1 rounded bg-yellow-900/30 text-yellow-400">
+            <span className="font-semibold">Donation: </span>
+            {message.hasDonation}
+          </div>
+        )}
       </div>
       {message.subtitle && (
         <TooltipProvider>
