@@ -75,6 +75,20 @@ export async function GET(request) {
               console.error("Error updating message:", err);
             } else {
               console.log(`Message ${id} processed and updated successfully.`);
+              if (rating > 6) {
+                db.run(`UPDATE users SET points = points + 10 WHERE name = ?`, [msg.chatname], (err) => {
+                  if (err) {
+                    console.error("Error updating user points:", err);
+                  } else {
+                    console.log(`User ${msg.chatname} points incremented by 10.`);
+                  }
+                });
+              }
+            }
+            if (err) {
+              console.error("Error updating message:", err);
+            } else {
+              console.log(`Message ${id} processed and updated successfully.`);
             }
           });
         }
