@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import sqlite3 from "sqlite3";
 
-import { openDb } from "../../api/initDb";
+import { openDb } from "../api/initDb";
 
 function insertMessage(db, message) {
   return new Promise((resolve, reject) => {

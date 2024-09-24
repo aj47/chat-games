@@ -1,6 +1,6 @@
 import sqlite3 from "sqlite3";
 
-function openDb() {
+export function openDb() {
   return new Promise((resolve, reject) => {
     const db = new sqlite3.Database("messages.db", (err) => {
       if (err) reject(err);
