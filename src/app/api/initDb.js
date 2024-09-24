@@ -18,7 +18,8 @@ export async function initDb() {
     await db.run(`CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT UNIQUE,
-        points INTEGER DEFAULT 0
+        points INTEGER DEFAULT 0,
+        avatar TEXT
       )`);
     console.log("Users table created or already exists");
 

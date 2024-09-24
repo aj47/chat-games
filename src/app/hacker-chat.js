@@ -9,11 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MessageSquare, Star, Trophy, Users } from "lucide-react"
 
 
-const leaderboard = [
-  { id: 1, user: "Ghost", aura: 1500, feedback: "Consistently provides crucial intel and innovative hacking strategies" },
-  { id: 2, user: "Cipher", aura: 1200, feedback: "Masterful at cracking complex encryption algorithms" },
-  { id: 3, user: "Nexus", aura: 1000, feedback: "Exceptional network infiltration techniques" },
-]
 
 const featuredProfiles = [
   { id: 1, name: "Cipher", aura: 1200, avatar: "/placeholder.svg?height=64&width=64", recentAchievement: "Code Breaker" },
@@ -28,6 +23,7 @@ import LeaderboardTab from "../components/leaderboard-tab";
 
 export function HackerChatGame() {
   const [messages, setMessages] = useState([]);
+  const [leaderboard, setLeaderboard] = useState([]);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -41,8 +37,10 @@ export function HackerChatGame() {
     };
 
     fetchMessages();
+    fetchLeaderboard();
 
-    const interval = setInterval(fetchMessages, 5000); // Poll every 5 seconds
+    const messagesInterval = setInterval(fetchMessages, 5000); // Poll every 5 seconds
+    const leaderboardInterval = setInterval(fetchLeaderboard, 30000); // Update leaderboard every 30 seconds
 
     const processMessagesInterval = setInterval(async () => {
       try {
@@ -56,10 +54,21 @@ export function HackerChatGame() {
     }, 30000); // 30 seconds
 
     return () => {
-      clearInterval(interval);
+      clearInterval(messagesInterval);
+      clearInterval(leaderboardInterval);
       clearInterval(processMessagesInterval);
     };
   }, []);
+
+  const fetchLeaderboard = async () => {
+    try {
+      const response = await fetch('/api/getLeaderboard');
+      const data = await response.json();
+      setLeaderboard(data.leaderboard);
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+    }
+  };
 
   return (
     <div
@@ -69,7 +78,6 @@ export function HackerChatGame() {
         className="h-full w-full max-w-4xl mx-auto"
       >
         <CardHeader>
-          <CardTitle className="text-2xl text-center">Techfren Chat</CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="chat" className="text-green-400">
@@ -78,13 +86,13 @@ export function HackerChatGame() {
                 value="chat"
                 className="data-[state=active]:bg-green-900 data-[state=active]:text-green-400">
                 <MessageSquare className="w-4 h-4 mr-2" />
-                Terminal
+                Techfren Chat
               </TabsTrigger>
               <TabsTrigger
                 value="profiles"
                 className="data-[state=active]:bg-green-900 data-[state=active]:text-green-400">
                 <Users className="w-4 h-4 mr-2" />
-                Operatives
+                Shop
               </TabsTrigger>
               <TabsTrigger
                 value="leaderboard"
