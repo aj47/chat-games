@@ -66,10 +66,10 @@ export function HackerChatGame() {
       className="container mx-auto p-4 min-h-screen text-green400 font-mono relative">
       <MatrixBackground />
       <Card
-        className="h-full w-full max-w-4xl mx-auto bg-black/85 border-green-400 shadow-[0_0_10px_#00ff00]"
+        className="h-full w-full max-w-4xl mx-auto"
       >
         <CardHeader>
-          <CardTitle className="text-2xl text-center text-green-400 animate-pulse">Techfren Chat</CardTitle>
+          <CardTitle className="text-2xl text-center">Techfren Chat</CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="chat" className="text-green-400">
