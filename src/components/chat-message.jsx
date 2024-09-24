@@ -37,18 +37,14 @@ export default function ChatMessage({ message }) {
         )}
       </div>
       {message.subtitle && (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="text-xs text-green-600 mt-1 cursor-help">
-                AI Analysis
-              </div>
-            </TooltipTrigger>
-            <TooltipContent className="bg-black border-green-400 text-green-400">
-              <p>{message.subtitle}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <div className="text-xs text-green-600 mt-1">
+          <span className="font-semibold">AI Rating: </span>
+          <span className="text-yellow-400">{message.rating}/10</span>
+          <div className="mt-1 p-1 rounded bg-green-900/30 text-green-400">
+            <span className="font-semibold">AI Analysis: </span>
+            {message.subtitle}
+          </div>
+        </div>
       )}
     </div>
   );
