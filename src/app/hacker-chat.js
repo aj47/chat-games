@@ -7,8 +7,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MessageSquare, ShoppingCart, Star, Trophy, Users } from "lucide-react"
-
-
+import { ElevenLabsClient, ElevenLabs } from "elevenlabs";
 
 const featuredProfiles = [
   { id: 1, name: "Cipher", aura: 1200, avatar: "/placeholder.svg?height=64&width=64", recentAchievement: "Code Breaker" },
@@ -24,6 +23,9 @@ import LeaderboardTab from "../components/leaderboard-tab";
 export function HackerChatGame() {
   const [messages, setMessages] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
+  const [audioUrl, setAudioUrl] = useState(null);
+
+  const elevenLabsClient = new ElevenLabsClient({ apiKey: process.env.NEXT_PUBLIC_ELEVENLABS_API_KEY });
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -70,6 +72,59 @@ export function HackerChatGame() {
     }
   };
 
+  const handleTTS = async (message, username) => {
+    console.log("handleTTS called with message:", message);
+    try {
+      // Get user points
+      const pointsResponse = await fetch(`/api/userPoints?username=${encodeURIComponent(username)}`);
+      const pointsData = await pointsResponse.json();
+      
+      if (pointsResponse.ok && pointsData.points >= 10) {
+        console.log(`User ${username} has ${pointsData.points} points`);
+        
+        // Deduct points for TTS usage
+        const updateResponse = await fetch('/api/userPoints', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, action: 'tts' })
+        });
+        
+        if (updateResponse.ok) {
+          const ttsText = message.slice(4).trim(); // Remove '!tts' from the message
+          const response = await elevenLabsClient.textToSpeech.convert("pMsXgVXv3BLzUgSXRplE", {
+            optimize_streaming_latency: ElevenLabs.OptimizeStreamingLatency.Zero,
+            output_format: ElevenLabs.OutputFormat.Mp32205032,
+            text: ttsText,
+            voice_settings: {
+              stability: 0.1,
+              similarity_boost: 0.3,
+              style: 0.2
+            }
+          });
+
+          // Check if response is ArrayBuffer
+          if (response instanceof ArrayBuffer) {
+            const audioBlob = new Blob([response], { type: 'audio/mpeg' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            setAudioUrl(audioUrl);
+
+            // Play the audio
+            const audio = new Audio(audioUrl);
+            audio.play();
+          } else {
+            console.error('Unexpected response type from ElevenLabs API');
+          }
+        } else {
+          console.error('Failed to update user points');
+        }
+      } else {
+        console.log(`User ${username} does not have enough points for TTS`);
+      }
+    } catch (error) {
+      console.error('Error in handleTTS:', error);
+    }
+  };
+
   return (
     <div
       className="container mx-auto p-4 min-h-screen text-green400 font-mono relative">
@@ -102,7 +157,11 @@ export function HackerChatGame() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="chat" className="max-h-[calc(100vh-200px)] overflow-y-auto scrollable-container">
-              <ChatTab messages={messages? messages.slice().reverse() : []} />
+              <ChatTab 
+                messages={messages ? messages.slice().reverse() : []} 
+                onTTS={handleTTS}
+                leaderboard={leaderboard}
+              />
             </TabsContent>
             <TabsContent value="profiles">
               <ProfilesTab featuredProfiles={featuredProfiles} />
@@ -113,6 +172,7 @@ export function HackerChatGame() {
           </Tabs>
         </CardContent>
       </Card>
+      {audioUrl && <audio src={audioUrl} style={{ display: 'none' }} />}
     </div>
   );
 }
