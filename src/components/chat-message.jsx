@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -10,7 +11,13 @@ import {
 } from "@/components/ui/tooltip";
 import { sanitizeHtml } from "@/lib/sanitize-html";
 
-export default function ChatMessage({ message }) {
+export default function ChatMessage({ message, onTTS }) {
+  useEffect(() => {
+    if (message.chatmessage.startsWith('!tts')) {
+      onTTS(message.chatmessage, message.chatname);
+    }
+  }, [message, onTTS]);
+
   return (
     <div key={message.id} className="mb-2">
       <div
