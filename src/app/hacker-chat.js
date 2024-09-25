@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardHeader} from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -24,8 +24,10 @@ export function HackerChatGame() {
   const [messages, setMessages] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
   const [audioUrl, setAudioUrl] = useState(null);
+  const [processedTTSMessages, setProcessedTTSMessages] = useState(new Set());
 
   const elevenLabsClient = new ElevenLabsClient({ apiKey: process.env.NEXT_PUBLIC_ELEVENLABS_API_KEY });
+  const audioRef = useRef(null);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -74,6 +76,11 @@ export function HackerChatGame() {
 
   const handleTTS = async (message, username) => {
     console.log("handleTTS called with message:", message);
+    if (processedTTSMessages.has(message.id)) {
+      console.log("Message already processed for TTS, skipping.");
+      return;
+    }
+
     try {
       // Get user points
       const pointsResponse = await fetch(`/api/userPoints?username=${encodeURIComponent(username)}`);
@@ -90,8 +97,34 @@ export function HackerChatGame() {
         });
         
         if (updateResponse.ok) {
-          const ttsText = message.slice(4).trim(); // Remove '!tts' from the message
-          const response = await elevenLabsClient.textToSpeech.convert("pMsXgVXv3BLzUgSXRplE", {
+          console.log("Full message:", message);
+          
+          let messageContent;
+          if (typeof message === 'string') {
+            messageContent = message;
+          } else if (message && typeof message.chatmessage === 'string') {
+            messageContent = message.chatmessage;
+          } else {
+            console.error('Invalid message format:', message);
+            return;
+          }
+          
+          console.log("Message content:", messageContent);
+          
+          const lowercaseMessage = messageContent.toLowerCase();
+          if (!lowercaseMessage.startsWith("!tts")) {
+            console.error('Message does not start with !tts');
+            return;
+          }
+          
+          const ttsText = messageContent.slice(4).trim(); // Remove '!tts' from the message
+          console.log("Text to be converted to speech:", ttsText);
+          
+          if (!ttsText) {
+            console.error('No valid text to convert to speech after removing !tts');
+            return;
+          }
+          const response = await elevenLabsClient.textToSpeech.convert("9BWtsMINqrJLrRacOk9x", {
             optimize_streaming_latency: ElevenLabs.OptimizeStreamingLatency.Zero,
             output_format: ElevenLabs.OutputFormat.Mp32205032,
             text: ttsText,
@@ -101,18 +134,44 @@ export function HackerChatGame() {
               style: 0.2
             }
           });
+          console.log(response);
 
-          // Check if response is ArrayBuffer
-          if (response instanceof ArrayBuffer) {
+          if (response && response.reader) {
+            const chunks = [];
+            while (true) {
+              const { done, value } = await response.reader.read();
+              if (done) break;
+              chunks.push(value);
+            }
+            const audioBuffer = await new Blob(chunks).arrayBuffer();
+            const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            setAudioUrl(audioUrl);
+
+            // Play the audio
+            if (audioRef.current) {
+              audioRef.current.src = audioUrl;
+              audioRef.current.play();
+            }
+
+            // Mark the message as processed
+            setProcessedTTSMessages(prev => new Set(prev).add(message.id));
+          } else if (response instanceof ArrayBuffer) {
+            // Handle the case where response is directly an ArrayBuffer
             const audioBlob = new Blob([response], { type: 'audio/mpeg' });
             const audioUrl = URL.createObjectURL(audioBlob);
             setAudioUrl(audioUrl);
 
             // Play the audio
-            const audio = new Audio(audioUrl);
-            audio.play();
+            if (audioRef.current) {
+              audioRef.current.src = audioUrl;
+              audioRef.current.play();
+            }
+
+            // Mark the message as processed
+            setProcessedTTSMessages(prev => new Set(prev).add(message.id));
           } else {
-            console.error('Unexpected response type from ElevenLabs API');
+            console.error('Unexpected response type from ElevenLabs API:', response);
           }
         } else {
           console.error('Failed to update user points');
@@ -172,7 +231,7 @@ export function HackerChatGame() {
           </Tabs>
         </CardContent>
       </Card>
-      {audioUrl && <audio src={audioUrl} style={{ display: 'none' }} />}
+      <audio ref={audioRef} style={{ display: 'none' }} />
     </div>
   );
 }
