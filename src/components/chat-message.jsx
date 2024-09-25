@@ -8,6 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { sanitizeHtml } from "@/lib/sanitize-html";
 
 export default function ChatMessage({ message }) {
   return (
@@ -54,9 +55,11 @@ export default function ChatMessage({ message }) {
             <img key={index} src={badge} alt="Badge" className="w-4 h-4" />
           ))} */}
         </div>
-        <p className="text-green-300" style={{ color: message.textColor }}>
-          {message.chatmessage}
-        </p>
+        <div 
+          className="text-green-300" 
+          style={{ color: message.textColor }}
+          dangerouslySetInnerHTML={sanitizeHtml(message.chatmessage)}
+        />
         {message.hasDonation && (
           <div className="mt-1 p-1 rounded bg-yellow-900/30 text-yellow-400">
             <span className="font-semibold">Donation: </span>
