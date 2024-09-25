@@ -24,7 +24,11 @@ export function HackerChatGame() {
   const [messages, setMessages] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
   const [audioUrl, setAudioUrl] = useState(null);
-  const [processedTTSMessages, setProcessedTTSMessages] = useState(new Set());
+  const [processedTTSMessages, setProcessedTTSMessages] = useState({});
+
+  useEffect(() => {
+    console.log("Initial processedTTSMessages:", processedTTSMessages);
+  }, [processedTTSMessages]);
 
   const elevenLabsClient = new ElevenLabsClient({ apiKey: process.env.NEXT_PUBLIC_ELEVENLABS_API_KEY });
   const audioRef = useRef(null);
@@ -74,10 +78,19 @@ export function HackerChatGame() {
     }
   };
 
-  const handleTTS = async (message, username) => {
-    console.log("handleTTS called with message:", message);
-    if (processedTTSMessages.has(message.id)) {
-      console.log("Message already processed for TTS, skipping.");
+  const handleTTS = async (messageContent, username) => {
+    console.log("handleTTS called with message:", messageContent);
+    console.log("Current processedTTSMessages:", processedTTSMessages);
+
+    // Find the message object in the messages array
+    const messageObject = messages.find(msg => msg.chatmessage === messageContent);
+    if (!messageObject || !messageObject.id) {
+      console.error('Message object or ID not found');
+      return;
+    }
+
+    if (processedTTSMessages[messageObject.id]) {
+      console.warn(`Message with id ${messageObject.id} already processed for TTS, skipping.`);
       return;
     }
 
@@ -97,19 +110,7 @@ export function HackerChatGame() {
         });
         
         if (updateResponse.ok) {
-          console.log("Full message:", message);
-          
-          let messageContent;
-          if (typeof message === 'string') {
-            messageContent = message;
-          } else if (message && typeof message.chatmessage === 'string') {
-            messageContent = message.chatmessage;
-          } else {
-            console.error('Invalid message format:', message);
-            return;
-          }
-          
-          console.log("Message content:", messageContent);
+          console.log("Full message object:", messageObject);
           
           const lowercaseMessage = messageContent.toLowerCase();
           if (!lowercaseMessage.startsWith("!tts")) {
@@ -155,7 +156,12 @@ export function HackerChatGame() {
             }
 
             // Mark the message as processed
-            setProcessedTTSMessages(prev => new Set(prev).add(message.id));
+            console.log("Adding message id to processedTTSMessages:", messageObject.id);
+            setProcessedTTSMessages(prev => {
+              const newObj = { ...prev, [messageObject.id]: true };
+              console.log("Updated processedTTSMessages:", newObj);
+              return newObj;
+            });
           } else if (response instanceof ArrayBuffer) {
             // Handle the case where response is directly an ArrayBuffer
             const audioBlob = new Blob([response], { type: 'audio/mpeg' });
