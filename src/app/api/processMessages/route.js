@@ -21,7 +21,6 @@ export async function GET(request) {
     });
 
     const rows = await db.all(`SELECT * FROM messages WHERE processed = 0 ORDER BY id ASC LIMIT 50`);
-    console.log(rows);
 
     if (rows.length === 0) {
       return NextResponse.json({ message: "No unprocessed messages found" });
@@ -44,7 +43,6 @@ export async function GET(request) {
       ],
       response_format: { type: "json_object" }
     });
-    console.log(JSON.stringify(completion));
 
     const responseJson = JSON.parse(completion.choices[0].message.content);
 

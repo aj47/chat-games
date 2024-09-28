@@ -56,7 +56,6 @@ try {
   console.log("Database opened successfully");
 
   const body = await request.json();
-  console.log("Received message:", body);
 
   await new Promise((resolve, reject) => {
     db.run("BEGIN TRANSACTION", (err) => {

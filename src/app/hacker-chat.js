@@ -48,7 +48,7 @@ export function HackerChatGame() {
     fetchLeaderboard();
 
     const messagesInterval = setInterval(fetchMessages, 5000); // Poll every 5 seconds
-    const leaderboardInterval = setInterval(fetchLeaderboard, 30000); // Update leaderboard every 30 seconds
+    const leaderboardInterval = setInterval(fetchLeaderboard, 120000); // Update leaderboard every 30 seconds
 
     const processMessagesInterval = setInterval(async () => {
       try {
